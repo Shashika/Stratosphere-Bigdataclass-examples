@@ -15,7 +15,11 @@
 package eu.stratosphere.tutorial.task3;
 
 import eu.stratosphere.api.java.record.functions.JoinFunction;
+import eu.stratosphere.tutorial.util.Util;
+import eu.stratosphere.types.DoubleValue;
+import eu.stratosphere.types.IntValue;
 import eu.stratosphere.types.Record;
+import eu.stratosphere.types.StringValue;
 import eu.stratosphere.util.Collector;
 
 /**
@@ -24,14 +28,36 @@ import eu.stratosphere.util.Collector;
  */
 public class TfIdfMatcher extends JoinFunction {
 
-	// ----------------------------------------------------------------------------------------------------------------
+    // ----------------------------------------------------------------------------------------------------------------
 
-	/**
-	 * Computes the Tf-Idf weight of every term by combining the results of the previous document and term
-	 * frequency computations.
-	 */
-	@Override
-	public void join(Record dfRecord, Record tfRecord, Collector<Record> collector) throws Exception {
-		// Implement your solution here
-	}
+    /**
+     * Computes the Tf-Idf weight of every term by combining the results of the previous document and term
+     * frequency computations.
+     */
+    private final Record result = new Record(3);  //define 3 parameter Record
+
+    @Override
+    public void join(Record dfRecord, Record tfRecord, Collector<Record> collector) throws Exception {
+        // Implement your solution here
+        String wordDf = dfRecord.getField(0, StringValue.class).toString();
+        double docFreq = Double.parseDouble(dfRecord.getField(1, IntValue.class).toString());
+
+        IntValue docID = tfRecord.getField(0, IntValue.class);
+        String wordTf = tfRecord.getField(1, StringValue.class).toString();
+        double termFeq = Double.parseDouble(tfRecord.getField(2, IntValue.class).toString());
+
+        double tf_idf = 0;
+
+        if (wordDf.equals(wordTf)) {
+            String word = wordDf;
+            tf_idf = termFeq * Math.log(Util.NUM_DOCUMENTS / docFreq);
+
+            result.setField(0, docID);
+            result.setField(1, new StringValue(word));
+            result.setField(2, new DoubleValue(tf_idf));
+
+            collector.collect(result);
+        }
+
+    }
 }

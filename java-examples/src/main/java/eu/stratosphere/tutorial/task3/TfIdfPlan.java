@@ -123,6 +123,6 @@ public class TfIdfPlan implements Program, ProgramDescription {
 		Plan toExecute = new TfIdfPlan().getPlan(inputPath, outputPath);
 		Util.executePlan(toExecute);
 
-		Util.deleteAllTempFiles();
+		//Util.deleteAllTempFiles();
 	}
 }
