@@ -116,6 +116,6 @@ public class WeightVectorPlan implements Program, ProgramDescription {
 		Plan toExecute = new WeightVectorPlan().getPlan(inputPath, outputPath);
 		Util.executePlan(toExecute);
 
-		Util.deleteAllTempFiles();
+		//Util.deleteAllTempFiles();
 	}
 }

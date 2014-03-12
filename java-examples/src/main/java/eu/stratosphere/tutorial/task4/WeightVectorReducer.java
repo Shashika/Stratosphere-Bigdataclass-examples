@@ -33,5 +33,18 @@ public class WeightVectorReducer extends ReduceFunction {
 	@Override
 	public void reduce(Iterator<Record> records, Collector<Record> collector) throws Exception {
 		// Implement your solution here
+        Record record = null;
+
+        while(records.hasNext()){
+
+            record = records.next();
+            int id = record.getField(0,WeightVector.class).getDocID();
+            System.out.println(id);
+            //record.setField(0,weightVector);
+
+        }
+
+
+     //   collector.collect(record);
 	}
 }

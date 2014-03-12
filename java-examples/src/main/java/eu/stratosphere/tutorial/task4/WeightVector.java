@@ -14,17 +14,16 @@
  **********************************************************************************************************************/
 package eu.stratosphere.tutorial.task4;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.DataInput;
-import java.io.DataInputStream;
-import java.io.DataOutput;
-import java.io.DataOutputStream;
-import java.io.IOException;
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
+import java.util.Vector;
 
 import eu.stratosphere.tutorial.util.Util;
+import eu.stratosphere.types.IntValue;
 import eu.stratosphere.types.Value;
+import org.eclipse.jetty.util.ArrayQueue;
 
 /**
  * This is a custom Value implementation for a weight vector, which maps terms (String) to a weight (Double).
@@ -32,6 +31,10 @@ import eu.stratosphere.types.Value;
 public class WeightVector implements Value {
 
 	private static final long serialVersionUID = 1L;
+    private int docID ;
+
+    private List<String> word   = new ArrayList<String>();
+    private List<Double> value = new ArrayList<Double>();
 
 	// - Internal state -----------------------------------------------------------------------------------------------
 
@@ -49,7 +52,12 @@ public class WeightVector implements Value {
 	 */
 	public void setDocId(int docId) {
 		// Implement your solution here
+        this.docID =  docId;
 	}
+
+    public int getDocID(){
+        return this.docID;
+    }
 
 	/**
 	 * Adds a term with a given weight to the vector.
@@ -61,6 +69,8 @@ public class WeightVector implements Value {
 	 */
 	public void add(String term, double weight) {
 		// Implement your solution here
+        word.add(term);
+        value.add(weight);
 	}
 
 	/**
@@ -68,6 +78,8 @@ public class WeightVector implements Value {
 	 */
 	public void clear() {
 		// Implement your solution here
+        word.clear();
+        value.clear();
 	}
 
 	// ----------------------------------------------------------------------------------------------------------------
@@ -80,17 +92,43 @@ public class WeightVector implements Value {
 	@Override
 	public void write(DataOutput out) throws IOException {
 		// Implement your solution here
-	}
+        out.writeInt(word.size());
+
+        for (String s : word) {
+            out.writeUTF(s);
+        }
+
+        out.writeInt(value.size());
+
+        for (Double aDouble : value) {
+            out.writeDouble(aDouble);
+        }
+    }
 
 	/**
-	 * Deserializes the contents of the vector from DataInput.
+	 * Deserializes the contents of the vector from DataInput.        .
 	 * <p>
 	 * Use DataInput to deserialize to the internal state.
 	 */
 	@Override
 	public void read(DataInput in) throws IOException {
-		// Implement your solution here
-	}
+        // Implement your solution here
+
+        int wordSize = in.readInt();
+
+        if (wordSize != 0) {
+            for (int i = 0 ; i < wordSize; i ++) {
+                word.add(in.readUTF());
+            }
+        }
+        int valueSize = in.readInt();
+
+        if (valueSize != 0) {
+            for (int i = 0 ; i < valueSize; i ++) {
+                value.add(in.readDouble());
+            }
+        }
+    }
 
 	/**
 	 * String representation of this vector.
@@ -98,8 +136,7 @@ public class WeightVector implements Value {
 	@Override
 	public String toString() {
 		// Implement your solution here
-		
-		return "";
+                return "WeightVector["+word+","+value+"]";
 	}
 
 	// - Testing ------------------------------------------------------------------------------------------------------
@@ -128,6 +165,7 @@ public class WeightVector implements Value {
 
 			sourceVectors[docId] = vector;
 		}
+
 
 		// 2. Test implementation
 		for (WeightVector vector : sourceVectors) {
