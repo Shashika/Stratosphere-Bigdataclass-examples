@@ -36,10 +36,6 @@ public class WeightVector implements Value {
     private List<String> word   = new ArrayList<String>();
     private List<Double> value = new ArrayList<Double>();
 
-	// - Internal state -----------------------------------------------------------------------------------------------
-
-
-	// ----------------------------------------------------------------------------------------------------------------
 
 	public WeightVector() {
 	}
@@ -72,6 +68,10 @@ public class WeightVector implements Value {
         word.add(term);
         value.add(weight);
 	}
+
+    public List<Double> getWeightList(){
+         return value;
+    }
 
 	/**
 	 * Clears the contents of the vector.
@@ -113,7 +113,6 @@ public class WeightVector implements Value {
 	@Override
 	public void read(DataInput in) throws IOException {
         // Implement your solution here
-
         int wordSize = in.readInt();
 
         if (wordSize != 0) {
